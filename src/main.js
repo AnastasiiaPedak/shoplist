@@ -8,6 +8,16 @@ import { firebaseApp } from './firebase'
 const pinia = createPinia()
 const app = createApp(App)
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+  .then(function(registration) {
+    console.log('Service Worker registered with scope:', registration.scope);
+  })
+  .catch(function(error) {
+    console.log('Service Worker registration failed:', error);
+  });
+}
+
 app.use(VueFire, { firebaseApp })
 app.use(pinia)
 app.mount('#app')
