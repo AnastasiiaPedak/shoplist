@@ -1,10 +1,17 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useCollection } from 'vuefire';
-import { addDoc, collection, deleteDoc, doc, updateDoc, getDocs, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+  getDocs,
+  where,
+} from 'firebase/firestore';
 import { db } from '../firebase';
 import { query } from 'firebase/database';
-
 
 export const useListStore = defineStore('list', () => {
   const isInShopView = ref(false);
@@ -12,7 +19,7 @@ export const useListStore = defineStore('list', () => {
 
   async function addItem(item) {
     try {
-      const res = await addDoc(collection(db, 'shoplist'), item);
+      await addDoc(collection(db, 'shoplist'), item);
     } catch (err) {
       console.error('Error adding document to shoplist', err);
     }
@@ -28,13 +35,13 @@ export const useListStore = defineStore('list', () => {
 
   async function updateStatus(item) {
     const docRef = doc(db, 'shoplist', item.id);
-    
+
     try {
-      await updateDoc(docRef, {[item.name]: item.value});
+      await updateDoc(docRef, { [item.name]: item.value });
     } catch (err) {
       console.error('Error updating status', err);
     }
-  } 
+  }
 
   function clearList() {
     deleteItems();
@@ -43,14 +50,19 @@ export const useListStore = defineStore('list', () => {
 
   async function deleteItems() {
     try {
-      const notInDefaultListItems = query(collection(db, 'shoplist'), where('in_default', '!=', true));
-      const notInDefaultListItemsSnapshot = await getDocs(notInDefaultListItems);
-  
+      const notInDefaultListItems = query(
+        collection(db, 'shoplist'),
+        where('in_default', '!=', true)
+      );
+      const notInDefaultListItemsSnapshot = await getDocs(
+        notInDefaultListItems
+      );
+
       notInDefaultListItemsSnapshot.forEach(async (docSnapshot) => {
         const docRef = doc(db, 'shoplist', docSnapshot.id);
         await deleteDoc(docRef);
       });
-    } catch(err) {
+    } catch (err) {
       console.error('Error while deleting items after clear', err);
     }
   }
@@ -59,26 +71,26 @@ export const useListStore = defineStore('list', () => {
     try {
       const itemsQuery = query(collection(db, 'shoplist'));
       const querySnapshot = await getDocs(itemsQuery);
-  
+
       querySnapshot.forEach(async (docSnapshot) => {
         const docRef = doc(db, 'shoplist', docSnapshot.id);
         await updateDoc(docRef, {
           to_buy: false,
-          in_cart: false
+          in_cart: false,
         });
       });
-    } catch(err) {
+    } catch (err) {
       console.error('Error while updating items after clear', err);
     }
   }
 
-  return { 
+  return {
     isInShopView,
     pending,
     data,
     addItem,
     deleteItem,
     updateStatus,
-    clearList
-  }
-})
+    clearList,
+  };
+});

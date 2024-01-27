@@ -1,15 +1,24 @@
 import { defineStore } from 'pinia';
 import { useCollection } from 'vuefire';
 import { db } from '../firebase';
-import { doc, updateDoc, query, where, writeBatch, collection, getDocs, deleteDoc, addDoc } from 'firebase/firestore';
-
+import {
+  doc,
+  updateDoc,
+  query,
+  where,
+  writeBatch,
+  collection,
+  getDocs,
+  deleteDoc,
+  addDoc,
+} from 'firebase/firestore';
 
 export const useCategoriesStore = defineStore('categories', () => {
   const { pending, data } = useCollection(collection(db, 'categories'));
 
   async function addCategory(newCategory) {
     try {
-      const res = await addDoc(collection(db, 'categories'), newCategory);
+      await addDoc(collection(db, 'categories'), newCategory);
     } catch (err) {
       console.error('Error adding new category', err);
     }
@@ -19,9 +28,9 @@ export const useCategoriesStore = defineStore('categories', () => {
     const categoryRef = doc(db, 'categories', category.id);
 
     try {
-      await updateDoc(categoryRef, { name: category.name});
+      await updateDoc(categoryRef, { name: category.name });
 
-      const shoplistQuery = query( 
+      const shoplistQuery = query(
         collection(db, 'shoplist'),
         where('category.id', '==', category.id)
       );
@@ -45,7 +54,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     const categoryRef = doc(db, 'categories', category.id);
 
     try {
-      const shoplistQuery = query( 
+      const shoplistQuery = query(
         collection(db, 'shoplist'),
         where('category.id', '==', category.id)
       );
@@ -56,7 +65,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         deleteDoc(doc.ref);
       });
 
-      await deleteDoc(categoryRef, { name: category.name});
+      await deleteDoc(categoryRef, { name: category.name });
     } catch (err) {
       console.error('Error deleting category and references', err);
     }
@@ -67,6 +76,6 @@ export const useCategoriesStore = defineStore('categories', () => {
     data,
     addCategory,
     updateCategoryAndReferences,
-    deleteCategoryAndReferences
-  }
-})
+    deleteCategoryAndReferences,
+  };
+});
