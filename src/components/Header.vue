@@ -8,8 +8,8 @@ const commonStore = useCommonStore();
 </script>
 
 <template>
-  <header class="flex justify-between items-center bg-main-green border-transparent sticky top-0 z-[60] px-6 py-8 lg:px-8 max-h-[92px]">
-    <nav class="w-1/2 flex items-center justify-between" aria-label="Global">
+  <header class="flex justify-between items-center bg-main-green border-transparent sticky top-0 z-[60] px-6 py-8 max-h-[92px]">
+    <nav class="w-[45%] flex items-center justify-between" aria-label="Global">
       <div class="flex lg:flex-1">
         <a href="#" class="-m-1.5 p-1.5 flex">
           <ShoppingCartIcon class="h-6 w-6 inline fill-main-gray" />

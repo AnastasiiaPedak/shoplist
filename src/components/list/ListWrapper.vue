@@ -54,7 +54,7 @@ function openAddCategoryForm() {
               <h5 v-if="!inShop" class="text-[#F5F5F5] text-md flex-1">
                 Default
               </h5>
-              <h5 v-if="!inShop" class="text-[#F5F5F5] text-md flex-1">
+              <h5 v-if="!inShop" class="text-[#F5F5F5] text-md flex-1 text-center">
                 To buy
               </h5>
               <h5 

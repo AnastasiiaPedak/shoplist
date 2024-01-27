@@ -1,17 +1,17 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-const props = defineProps(['id', 'value', 'name'])
-const emit = defineEmits(['update']);
+const props = defineProps(['id', 'modelValue', 'name'])
+const emit = defineEmits(['update:modelValue']);
 
-const checkboxValue = ref(props.value);
+const checkboxValue = ref(props.modelValue);
 
-watch(() => props.value, (newValue) => {
+watch(() => props.modelValue, (newValue) => {
   checkboxValue.value = newValue;
 });
 
 watch(checkboxValue, (newValue) => {
-  emit('update', { id: props.id, value: newValue, name: props.name });
+  emit('update:modelValue', { id: props.id, value: newValue, name: props.name });
 });
 </script>
 

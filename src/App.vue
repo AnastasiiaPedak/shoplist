@@ -8,8 +8,8 @@ const commonStore = useCommonStore();
 
 <template>
   <div id="container" class="flex flex-col h-screen">
-    <Header></Header>
-    <ListWrapper></ListWrapper>
+    <Header />
+    <ListWrapper />
     <div v-if="commonStore.isBlurredScreen" class="fixed top-0 left-0 right-0 bottom-0 z-40 backdrop-blur-[1.5px]"></div>
   </div>
 </template>

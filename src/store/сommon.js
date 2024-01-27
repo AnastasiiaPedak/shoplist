@@ -7,7 +7,6 @@ const [isBlurredScreen, toggleBlurredScreen] = useToggle();
 const activeFormId = ref('');
 
 function setActiveFormId (id) {
-  console.log('here')
   activeFormId.value = id;
 }
 

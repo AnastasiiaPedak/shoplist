@@ -12,6 +12,10 @@ import CategoryWrapper from './CategoryWrapper.vue';
 
 const props = defineProps(['category', 'dataToShow']);
 
+const sortedItems = computed(() => {
+  return props.dataToShow.sort((a,b) => a.in_cart - b.in_cart);
+})
+
 const [isAddItemMode, toggleAddItemMode] = useToggle();
 const commonStore = useCommonStore();
 const listStore = useListStore();
@@ -32,12 +36,12 @@ function openNewItemForm() {
   <CategoryWrapper class="border-2 rounded border-[#F5F5F5]/50 shadow-md shadow-[#F5F5F5]/50 mt-4 p-2">
     <CategoryHeaderForm :inputProps="category" />
     <ul>
-      <li v-if="!dataToShow.length" class="text-gray-400 text-sm mt-4">
+      <li v-if="!sortedItems.length" class="text-gray-400 text-sm mt-4">
         No items in the list
       </li>
       <li
         v-else 
-        v-for="item in dataToShow" 
+        v-for="item in sortedItems" 
         :key="item.id" 
         class="flex items-start flex-wrap justify-between p-2 rounded-md mt-2 bg-main-gray"
       >
@@ -52,24 +56,24 @@ function openNewItemForm() {
         <div class="flex w-[53%]" :class="[inShop ? 'justify-end' : 'justify-between']">
           <Checkbox 
             v-if="!inShop" 
-            :value="item.in_default" 
+            :model-value="item.in_default" 
             :id="item.id"
             name="in_default"
-            @update="handleCheckboxUpdate"
+            @update:model-value="handleCheckboxUpdate"
           />
           <Checkbox 
             v-if="!inShop" 
-            :value="item.to_buy" 
+            :model-value="item.to_buy" 
             :id="item.id"
             name="to_buy" 
-            @update="handleCheckboxUpdate"
+            @update:model-value="handleCheckboxUpdate"
           />
           <Checkbox 
             v-if="inShop" 
             :id="item.id" 
-            :value="item.in_cart" 
+            :model-value="item.in_cart" 
             name="in_cart"
-            @update="handleCheckboxUpdate"
+            @update:model-value="handleCheckboxUpdate"
           />
           <button 
             :class="{ 'hidden': inShop}" 

@@ -117,8 +117,8 @@ async function createCategory() {
       <Input 
         :id="categoryRef.id || 'new_category'" 
         :name="categoryRef.inputName" 
-        :value="categoryRef.name" 
-        @update="handleInputUpdate" 
+        :model-value="categoryRef.name" 
+        @update:model-value="handleInputUpdate" 
         :disabled="!isCategoryEditMode && categoryExists" 
         :v="v"
         :classes="isCategoryEditMode || props.isAddCategoryModeOpen ? '' : 'text-[#F5F5F5] text-lg bg-[#000000]'"
