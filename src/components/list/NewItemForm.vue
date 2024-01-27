@@ -6,32 +6,37 @@ import { maxLength, required } from '@vuelidate/validators';
 import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { CheckIcon, XMarkIcon } from '@heroicons/vue/24/solid';
-import Checkbox from '../common/Checkbox.vue';
+import CheckboxForm from '../common/CheckboxForm.vue';
+import InputForm from '../common/InputForm.vue';
 import { useCommonStore } from '../../store/сommon';
 
 const commonStore = useCommonStore();
 
 const listStore = useListStore();
-const props = defineProps(['categoryData']);
+const props = defineProps({
+  categoryData: {
+    type: Object,
+  },
+});
 const emit = defineEmits(['cancalAddMode']);
 
-const defaultNewItem = { 
-  name: '', 
-  details: '', 
-  category: '', 
-  in_cart: false, 
-  in_default: false, 
-  to_buy: false 
+const defaultNewItem = {
+  name: '',
+  details: '',
+  category: '',
+  in_cart: false,
+  in_default: false,
+  to_buy: false,
 };
-const newItem = reactive({...defaultNewItem});
+const newItem = reactive({ ...defaultNewItem });
 
 const rules = {
-      name: { required, maxLength: maxLength(50) },
-      details: { maxLength: maxLength(200) }
-    };
+  name: { required, maxLength: maxLength(50) },
+  details: { maxLength: maxLength(200) },
+};
 const v = useVuelidate(rules, newItem);
 
-function handleCheckboxUpdate (updateData) {
+function handleUpdate(updateData) {
   newItem[updateData.name] = updateData.value;
 }
 
@@ -56,67 +61,68 @@ async function addNewItem() {
         details: newItem.details,
         in_cart: false,
         in_default: newItem.in_default,
-        to_buy: newItem.to_buy
+        to_buy: newItem.to_buy,
       };
 
       await listStore.addItem(itemToAdd);
       cancelAddMode();
     } else {
-      console.log(`Category doc doesn't exist`);
+      console.error("Category doc doesn't exist");
     }
   } catch (err) {
-    console.error('Error adding new item', err)
+    console.error('Error adding new item', err);
   }
 }
 
-function cancelAddMode () {
+function cancelAddMode() {
   emit('cancalAddMode');
   resetForm();
   commonStore.toggleBlurredScreen();
 }
 
-function resetForm () {
+function resetForm() {
   Object.assign(newItem, defaultNewItem);
   v.value.$reset();
 }
 </script>
 
 <template>
-  <form class="w-full flex items-start justify-between pt-[0.65rem] flex-wrap" @submit.prevent="handleAddingItem">
+  <form
+    class="w-full flex items-start justify-between pt-[0.65rem] flex-wrap"
+    @submit.prevent="handleAddingItem"
+  >
     <div class="max-w-[47%]">
-      <input 
+      <InputForm
         type="text"
-        v-model="newItem.name"
+        name="name"
+        :model-value="newItem.name"
         placeholder="Item name"
-        class="w-full mt-1.5 bg-main-gray border rounded border-gray-400 py-1 px-2 focus:border-main-green focus:outline-main-green 
-            text-gray-400"
+        :v="v"
+        class="mt-1.5"
+        @update:model-value="handleUpdate"
       />
-      <div v-if="v.name.$error" class="text-error mt-1">
-        {{ v.name.$errors[0].$message }}
-      </div>
-      <textarea 
-        type="text" 
-        placeholder="Item details" 
-        v-model="newItem.details" 
-        class="w-full bg-main-gray border mt-3 rounded border-gray-400 py-1 px-2 focus:border-main-green focus:outline-main-green 
-            text-gray-400"
+      <textarea
+        v-model="newItem.details"
+        type="text"
+        placeholder="Item details"
+        class="w-full bg-main-gray border mt-3 rounded border-gray-400 py-1 px-2 focus:border-main-green focus:outline-main-green text-gray-400"
       />
       <div v-if="v.details.$error" class="text-error mt-1">
         {{ v.details.$errors[0].$message }}
       </div>
     </div>
     <div class="flex w-[53%] justify-between">
-      <Checkbox 
-        id="new_item_in_default" 
-        :value="newItem.in_default" 
-        name="in_default" 
-        @update="handleCheckboxUpdate" 
+      <CheckboxForm
+        id="new_item_in_default"
+        :model-value="newItem.in_default"
+        name="in_default"
+        @update:model-value="handleUpdate"
       />
-      <Checkbox 
-        id="new_item_to_buy" 
-        :value="newItem.to_buy" 
-        name="to_buy" 
-        @update="handleCheckboxUpdate" 
+      <CheckboxForm
+        id="new_item_to_buy"
+        :model-value="newItem.to_buy"
+        name="to_buy"
+        @update:model-value="handleUpdate"
       />
       <div class="w-[20px] h-[20px]"></div>
     </div>
@@ -124,7 +130,7 @@ function resetForm () {
       <button type="submit" class="text-main-green">
         <CheckIcon class="w-5 h-5" />
       </button>
-      <button type="button" @click="cancelAddMode" class="text-error ml-3.5">
+      <button type="button" class="text-error ml-3.5" @click="cancelAddMode">
         <XMarkIcon class="w-5 h-5" />
       </button>
     </div>
