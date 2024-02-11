@@ -94,12 +94,17 @@ async function handleCategoryEditing() {
   }
 }
 
+const isInPending = ref(false);
+
 async function editCategory() {
+  isInPending.value = true;
   try {
     await categoriesStore.updateCategoryAndReferences(categoryRef.value);
     cancelCategoryEditMode();
   } catch (err) {
     console.error(err);
+  } finally {
+    isInPending.value = false;
   }
 }
 
@@ -111,12 +116,15 @@ function cancelCategoryEditMode() {
 }
 
 async function createCategory() {
+  isInPending.value = true;
   try {
     await categoriesStore.addCategory(categoryRef.value);
     emit('closeAddCategoryMode');
     commonStore.toggleBlurredScreen();
   } catch (err) {
     console.error(err);
+  } finally {
+    isInPending.value = false;
   }
 }
 </script>
@@ -145,10 +153,10 @@ async function createCategory() {
         v-if="isCategoryEditMode || !categoryExists"
         class="flex items-baseline ml-3"
       >
-        <button type="submit">
+        <button type="submit" :disabled="isInPending">
           <CheckIcon class="w-5 h-5 text-main-green" />
         </button>
-        <button type="button">
+        <button type="button" :disabled="isInPending">
           <XMarkIcon class="w-5 h-5 text-error ml-3.5" @click="closeForm" />
         </button>
       </div>
