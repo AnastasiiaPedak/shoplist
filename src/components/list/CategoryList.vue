@@ -21,7 +21,22 @@ const props = defineProps({
 
 const sortedItems = computed(() => {
   const data = [...props.dataToShow];
-  return data.sort((a, b) => a.in_cart - b.in_cart);
+
+  const sortedData = data.sort((a, b) => {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const itemsInCart = sortedData.filter((i) => i.in_cart);
+
+  const itemsNotInCart = sortedData.filter((i) => !i.in_cart);
+
+  return itemsNotInCart.concat(itemsInCart);
 });
 
 const [isAddItemMode, toggleAddItemMode] = useToggle();
@@ -45,8 +60,12 @@ function openNewItemForm() {
     class="border-2 rounded border-[#F5F5F5]/50 shadow-md shadow-[#F5F5F5]/50 mt-4 p-2"
   >
     <CategoryHeaderForm :input-props="category" />
-    <ul>
-      <li v-if="!sortedItems.length" class="text-gray-400 text-sm mt-4">
+    <TransitionGroup name="list" tag="ul">
+      <li
+        v-if="!sortedItems.length"
+        key="no_items"
+        class="text-gray-400 text-sm mt-4"
+      >
         No items in the list
       </li>
       <li
@@ -131,6 +150,22 @@ function openNewItemForm() {
           <PlusCircleIcon class="w-7 h-7 text-main-green" />
         </button>
       </li>
-    </ul>
+    </TransitionGroup>
   </CategoryWrapper>
 </template>
+
+<style scoped>
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-leave-active {
+  position: absolute;
+}
+</style>

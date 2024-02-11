@@ -54,7 +54,10 @@ function openAddCategoryForm() {
             <span>Clear all</span>
           </button>
         </div>
-        <div class="list-container flex flex-col mt-5">
+        <div
+          v-if="categoriesStore.data.length"
+          class="list-container flex flex-col mt-5"
+        >
           <div class="flex justify-between">
             <div class="w-[47%]"></div>
             <div
@@ -99,6 +102,7 @@ function openAddCategoryForm() {
             </button>
           </div>
         </div>
+        <p v-else class="text-gray-400 text-md mt-7 text-center">Loading ...</p>
       </div>
     </KeepAlive>
   </main>

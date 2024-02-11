@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue';
+import { ref, reactive } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useListStore } from '../../store/listStore';
 import { maxLength, required } from '@vuelidate/validators';
@@ -26,7 +26,7 @@ const defaultNewItem = {
   category: '',
   in_cart: false,
   in_default: false,
-  to_buy: false,
+  to_buy: true,
 };
 const newItem = reactive({ ...defaultNewItem });
 
@@ -46,8 +46,11 @@ async function handleAddingItem() {
   addNewItem();
 }
 
+const isAddingInPending = ref(false);
+
 async function addNewItem() {
   const categoryRef = doc(db, `categories/${props.categoryData.id}`);
+  isAddingInPending.value = true;
 
   try {
     const categoryDoc = await getDoc(categoryRef);
@@ -71,6 +74,8 @@ async function addNewItem() {
     }
   } catch (err) {
     console.error('Error adding new item', err);
+  } finally {
+    isAddingInPending.value = false;
   }
 }
 
@@ -127,10 +132,19 @@ function resetForm() {
       <div class="w-[20px] h-[20px]"></div>
     </div>
     <div class="flex items-center w-full justify-end">
-      <button type="submit" class="text-main-green">
+      <button
+        type="submit"
+        class="text-main-green"
+        :disabled="isAddingInPending"
+      >
         <CheckIcon class="w-5 h-5" />
       </button>
-      <button type="button" class="text-error ml-3.5" @click="cancelAddMode">
+      <button
+        type="button"
+        class="text-error ml-3.5"
+        :disabled="isAddingInPending"
+        @click="cancelAddMode"
+      >
         <XMarkIcon class="w-5 h-5" />
       </button>
     </div>
