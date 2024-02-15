@@ -2,9 +2,23 @@
 import { ShoppingCartIcon } from '@heroicons/vue/24/solid';
 import { useListStore } from '../store/listStore';
 import { useCommonStore } from '../store/сommon';
+import { onMounted, watch } from 'vue';
+import { IN_SHOP_MODE, CREATE_LIST_MODE } from '../constants';
 
 const listStore = useListStore();
 const commonStore = useCommonStore();
+
+watch(
+  () => listStore.isInShopView,
+  () => {
+    const appMode = listStore.isInShopView ? IN_SHOP_MODE : CREATE_LIST_MODE;
+    localStorage.setItem('mode', appMode);
+  });
+
+onMounted(() => {
+  const modeValue = localStorage.getItem('mode') || CREATE_LIST_MODE;
+  listStore.isInShopView = modeValue === IN_SHOP_MODE;
+});
 </script>
 
 <template>
